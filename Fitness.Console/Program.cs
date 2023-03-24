@@ -15,18 +15,34 @@ namespace Fitness.MainInterface
             Console.WriteLine("Добро пожаловать в приложение \"Fitness\"");
             Console.WriteLine("Введите имя пользователя: ");
             var name = Console.ReadLine();
-            Console.WriteLine("Введите пол");
-            var gender = Console.ReadLine();
-            Console.WriteLine("Введите дату рождения. Пример(01.01.2000 )");
-            var dateBitrth = DateTime.Parse(Console.ReadLine());
-            Console.WriteLine("Введите вес");
-            var weigth = double.Parse(Console.ReadLine());
-            Console.WriteLine("Введите рост");
-            var heigth = double.Parse(Console.ReadLine());
+            
+            var userController = new UserController(name);
+            if (userController.IsNewUser)
+            {
+                Console.Write("Введите пол:");
+                var gender = Console.ReadLine();
+                DateTime birthDate;
+                while (true)
+                {
 
-            var userController = new UserController(name,gender,dateBitrth,weigth,heigth);
-            userController.Save();
 
+                    Console.Write("Введите дату рождения:");
+                    if (DateTime.TryParse(Console.ReadLine(), out DateTime birthDay))
+                    {
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Неверный формат даты рождения");
+                    }
+                }
+                Console.Write("Введите вес:");
+                var weigth = Console.ReadLine();
+                Console.Write("Введите рост:");
+                var heigth = Console.ReadLine();
+                User.SetNewUserData();
+            }
+            Console.WriteLine(userController.CurrentUser);
             Console.ReadKey();
         }
     }

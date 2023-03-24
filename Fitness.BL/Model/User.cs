@@ -12,10 +12,12 @@ namespace Fitness.BL.Model
     /// Пользователь.
     /// </summary>
         public string Name { get; }
-        public Gender Gender { get; }
-        public DateTime BirthDate { get; }
+        public Gender Gender { get; set; }
+        public DateTime BirthDate { get; set; }
         public double Weight { get; set; }
         public double Heigth { get; set; }
+
+        public int Age { get { return DateTime.Now.Year - BirthDate.Year; } }
 
         public User(string name, Gender gender, DateTime birthDate, double weigth, double heigth)
         {
@@ -47,9 +49,17 @@ namespace Fitness.BL.Model
             Heigth = heigth;
             Weight = weigth;
         }
+        public User(string name )
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException("Введите имя пользователя", nameof(name));
+            }
+            Name = name;
+        }
         public override string ToString()
         {
-            return Name;
+            return Name + " " + Age;
         }
 
     }

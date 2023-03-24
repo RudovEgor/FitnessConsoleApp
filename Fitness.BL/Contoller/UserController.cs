@@ -13,14 +13,50 @@ namespace Fitness.BL.Contoller
  /// </summary>
     public class UserController
     {
-        public User User { get; }
-        public UserController(string userName, string genderName, DateTime birthDay, double weigth, double heigth)
+        public User CurrentUser { get; }
+        public List<User> Users { get; }
+        public bool IsNewUser { get; } = false;
+        public UserController(string userName)
         {
-            var gender = new Gender(genderName);
-            var user = new User(userName, gender, birthDay,weigth,heigth);
-
-
-            User = user ?? throw new ArgumentNullException("Пользователь не может быть равен null", nameof(user));
+            if(string.IsNullOrWhiteSpace(userName))
+            {
+                throw new ArgumentNullException("Имя пользователя не может быть пустым",nameof(userName));
+            }
+            Users = GetUsersData();
+            CurrentUser = Users.SingleOrDefault(u => u.Name==userName);
+            if(CurrentUser == null) 
+            {
+                CurrentUser = new User(userName);
+                Users.Add(CurrentUser);
+                IsNewUser = true;
+                Save();
+            }
+        }
+        public void SetNewUserData(string genderName, DateTime birthDate, double weigth=1,double heigth=1)
+        {
+            CurrentUser.Gender = new Gender(genderName);
+            CurrentUser.BirthDate = birthDate;
+            CurrentUser.Weight = weigth;
+            CurrentUser.Heigth = heigth;
+            Save();
+        }
+        /// <summary>
+        /// Получить список пользователей.
+        /// </summary>
+        private List<User> GetUsersData()
+        {
+            var formatter = new BinaryFormatter();
+            using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
+            {
+                if (formatter.Deserialize(fs) is List<User> users )
+                {
+                    return users;
+                }
+                else
+                {
+                    return new List<User>();
+                }
+            }
         }
         /// <summary>
         /// Сохранение данных пользователя.
@@ -30,23 +66,8 @@ namespace Fitness.BL.Contoller
             var formatter = new BinaryFormatter();
             using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
             {
-                formatter.Serialize(fs, User);
+                formatter.Serialize(fs, Users);
             }
         }
-        /// <summary>
-        /// Загрузка данных пользователя пользователя.
-        /// </summary>
-        public UserController()
-        {
-            var formatter = new BinaryFormatter();
-            using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
-            {
-                if (formatter.Deserialize(fs) is User)
-                {
-                    User = User;
-                }
-            }
-        }
-        
     }
 }
